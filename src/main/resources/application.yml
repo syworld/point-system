@@ -1,0 +1,10 @@
+spring:
+  profiles:
+    active: ${ENV:local}
+
+
+mybatis:
+  type-aliases-package: com.world.pointsystem.*.mapper
+  mapper-locations: mybatis/mapper/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
