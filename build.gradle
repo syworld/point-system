@@ -1,8 +1,15 @@
 plugins {
-	id 'org.springframework.boot' version '2.7.1'
+	id 'org.springframework.boot' version '2.6.6'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
+	id 'jacoco'
 }
+
+
+jacoco {
+	toolVersion = "0.8.7"
+}
+
 
 group = 'com.world'
 version = '0.0.1-SNAPSHOT'
@@ -14,17 +21,69 @@ configurations {
 	}
 }
 
+
 repositories {
 	mavenCentral()
 }
 
-dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+ext {
+	mybatisSpringBootStarterVersion = "2.2.0"
+	mysqlConnectorJavaVersion = "8.0.25"
+	spricDocVersion = "1.6.6"
+	mapstructVersion = "1.4.1"
+	lombokMapstructBindingVersion = "0.2.0"
+	googleJavaFormatVersion = "1.15.0"
 }
 
-tasks.named('test') {
+dependencies {
+	implementation "org.springframework.boot:spring-boot-starter-web"
+	implementation "org.springframework.boot:spring-boot-starter-validation"
+	compileOnly "org.projectlombok:lombok"
+	// MyBatis
+	implementation "org.mybatis.spring.boot:mybatis-spring-boot-starter:${mybatisSpringBootStarterVersion}"
+	runtimeOnly "mysql:mysql-connector-java:${mysqlConnectorJavaVersion}"
+	// swagger
+	implementation "org.springdoc:springdoc-openapi-ui:${spricDocVersion}"
+	// mapstruct : mapstruct processor 이후 lombok processor가 위치
+	implementation "org.mapstruct:mapstruct:${mapstructVersion}.Final"
+	annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}.Final"
+	annotationProcessor "org.projectlombok:lombok"
+	annotationProcessor "org.projectlombok:lombok-mapstruct-binding:${lombokMapstructBindingVersion}"
+	// test
+	testImplementation "com.h2database:h2"
+	testImplementation "org.springframework.boot:spring-boot-starter-test"
+	// formatting
+	implementation "com.google.googlejavaformat:google-java-format:${googleJavaFormatVersion}"
+}
+
+
+test {
 	useJUnitPlatform()
+	// 테스트가 수행될 때마다 test report를 생성하고, code coverage 검증
+	finalizedBy 'jacocoTestReport'
+}
+
+
+jacocoTestReport {
+	reports {
+		html.enabled true
+		csv.enabled true
+		xml.enabled false
+	}
+	// jacocoTestReport 실행하고 jacocoTestCoverageVerification를 실행
+	finalizedBy 'jacocoTestCoverageVerification'
+}
+
+jacocoTestCoverageVerification {
+	violationRules {
+		rule {
+			element = 'CLASS'
+
+			limit {
+				counter = 'BRANCH'
+				value = 'COVEREDRATIO'
+				minimum = 0.80
+			}
+		}
+	}
 }
