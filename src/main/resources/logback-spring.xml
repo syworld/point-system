@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="30 seconds">
+  <!-- aplication.yml에 정의-->
+  <springProperty scope="context" name="LOG_LEVEL" source="logging.level.root"/>
+  <springProperty scope="context" name="LOG_DIR" source="logging.dir"/>
+  <Property name="LOG_PATTERN"
+    value="%d{yyyy-MM-dd HH:mm:ss}:%-4relative %green([%thread]) %highlight(%-5level) %boldWhite([%C.%M:%yellow(%L)]) - %msg%n"/>
+
+  <!-- APPENDER (https://logback.qos.ch/manual/appenders.html)
+  ConsoleAppender: 콘솔에 로그를 기록
+  FileAppender: 파일에 로그를 기록
+  RollingFileAppender: 여러 개의 파일을 순회하며 로그를 기록
+  SMTPAppender: 로그를 메일로 기록
+  DBAppender: 데이터베이스에 로그를 기록
+  -->
+
+  <!-- 콘솔 로그 -->
+  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+      <Pattern>
+        ${LOG_PATTERN}
+      </Pattern>
+      <charset>UTF-8</charset>
+    </encoder>
+  </appender>
+
+
+  <!-- 파일 로그 -->
+  <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${LOG_DIR}/logs.log</file>
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+      <Pattern>
+        ${LOG_PATTERN}
+      </Pattern>
+      <charset>UTF-8</charset>
+    </encoder>
+
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <!-- 아카이브 되는 파일의 개수는 30개이며, 아카이브 된 파일의 크기는 총 3GB을 넘을 수 없다 -->
+      <fileNamePattern>${LOG_DIR}/logs.%d{yyyy-MM-dd}.log</fileNamePattern>
+      <maxHistory>30</maxHistory>
+      <totalSizeCap>3GB</totalSizeCap>
+    </rollingPolicy>
+  </appender>
+
+
+  <!-- 에러 로그 -->
+  <appender name="ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <filter class="ch.qos.logback.classic.filter.LevelFilter">
+      <level>ERROR</level>
+      <onMatch>ACCEPT</onMatch>
+      <onMismatch>DENY</onMismatch>
+    </filter>
+    <file>${LOG_DIR}/error/error.log</file>
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+      <Pattern>
+        ${LOG_PATTERN}
+      </Pattern>
+      <charset>UTF-8</charset>
+    </encoder>
+
+    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+      <!-- maxFileSize 태그는 각각의 로그 파일이 가질 수 있는 최대 크기를 제한한다. 활성화된 로그 파일의 크기가 maxFileSize라면 해당 로그 파일을 아카이브 하며, 이때 %i 토큰으로 다음 로그 이름을 결정한다. -->
+      <fileNamePattern>${LOG_DIR}/error/error.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+      <maxFileSize>100MB</maxFileSize>
+      <maxHistory>30</maxHistory>
+      <totalSizeCap>3GB</totalSizeCap>
+    </rollingPolicy>
+  </appender>
+
+
+  <!-- 전역적인 로그 설정 -->
+  <springProfile name="local, test">
+    <root level="${LOG_LEVEL}">
+      <appender-ref ref="CONSOLE"/>
+    </root>
+  </springProfile>
+
+  <springProfile name="dev, prod">
+    <root level="${LOG_LEVEL}">
+      <appender-ref ref="FILE"/>
+      <appender-ref ref="ERROR"/>
+    </root>
+  </springProfile>
+
+
+</configuration>
