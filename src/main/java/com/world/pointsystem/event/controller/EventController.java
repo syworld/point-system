@@ -2,7 +2,7 @@ package com.world.pointsystem.event.controller;
 
 import com.world.pointsystem.event.dto.request.EventRequest;
 import com.world.pointsystem.event.dto.response.EventResponse;
-import com.world.pointsystem.event.dto.response.PointResponse;
+import com.world.pointsystem.event.dto.response.UserPointResponse;
 import com.world.pointsystem.event.entity.ReviewEvent;
 import com.world.pointsystem.event.mapper.ReviewEventMapstructMapper;
 import com.world.pointsystem.event.service.EventService;
@@ -55,17 +55,17 @@ public class EventController {
 
   @Operation(summary = "유저 아이디로 현재 point 조회", description = "유저 아이디로 해당 유저의 현재 point 조회하기")
   @ApiResponses({
-      @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = PointResponse.class))),
+      @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = UserPointResponse.class))),
       @ApiResponse(responseCode = "404", description = "REVIEW EVENT NOT FOUND", content = @Content(schema = @Schema(implementation = GlobalExceptionResponse.class))),
   })
   @Parameters({
       @Parameter(name = "userId", description = "유저 아이디", example = "1e2e0ef2-92b7-4817-a5f3-0c575361f745"),
   })
   @GetMapping("/points")
-  public ResponseEntity<PointResponse> getUserEventPoints(
+  public ResponseEntity<UserPointResponse> getUserEventPoints(
       @RequestParam(value = "userId") String userId) {
     Integer point = eventService.getUserCurrentPointOrElseThrow(userId);
-    PointResponse pointResponse = new PointResponse(userId, point);
+    UserPointResponse pointResponse = new UserPointResponse(userId, point);
     return ResponseEntity.ok().body(pointResponse);
   }
 

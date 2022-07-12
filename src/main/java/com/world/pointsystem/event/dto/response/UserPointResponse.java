@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class PointResponse {
+public class UserPointResponse {
 
   private String userId;
   private Integer currentPoint;
