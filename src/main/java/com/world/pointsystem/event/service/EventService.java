@@ -60,7 +60,7 @@ public class EventService {
     reviewEvent.setFirstPoint(Point.ZERO.getValue());
 
     // 가장 최근 review event 호출
-    ReviewEvent recentReviewEvent = getUserRecentReviewEvent(reviewEvent.getPlaceId(),
+    ReviewEvent recentReviewEvent = getUserRecentReviewEventOrNull(reviewEvent.getPlaceId(),
         reviewEvent.getUserId());
 
     boolean isAddedRecentContentPoint = recentReviewEvent.getContentPoint()
@@ -81,9 +81,11 @@ public class EventService {
     reviewEvent.setContentPoint(Point.ZERO.getValue());
     reviewEvent.setImagePoint(Point.ZERO.getValue());
 
-    // Place의 첫 번째 리뷰이면 firstPoint = -1
+    // Place의 첫 번째 리뷰이면 first point = -1
+    ReviewEvent addReviewEvent = getAddReviewEventOrNull(reviewEvent.getPlaceId(),
+        reviewEvent.getUserId());
     Integer firstPointValue;
-    if (reviewEvent.getFirstPoint().equals(Point.PLUS.getValue())) {
+    if (addReviewEvent != null && addReviewEvent.getFirstPoint().equals(Point.PLUS.getValue())) {
       firstPointValue = Point.MINUS.getValue();
     } else {
       firstPointValue = Point.ZERO.getValue();
@@ -101,10 +103,13 @@ public class EventService {
   }
 
 
-  public ReviewEvent getUserRecentReviewEvent(String placeId, String userId) {
+  public ReviewEvent getUserRecentReviewEventOrNull(String placeId, String userId) {
     return reviewEventMapper.findRecentByUserIdAndPlaceId(placeId, userId);
   }
 
+  public ReviewEvent getAddReviewEventOrNull(String placeId, String userId) {
+    return reviewEventMapper.findAddEventByUserIdAndPlaceId(placeId, userId);
+  }
 
   public Integer getUserCurrentPointOrElseThrow(String userId) {
     Integer point = reviewEventMapper.countPointByUserId(userId);
