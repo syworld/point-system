@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.world.pointsystem.event.dao.ReviewEventMapper">
+  <insert id="insert" parameterType="com.world.pointsystem.event.entity.ReviewEvent">
+    INSERT INTO review_event (user_id, review_id, place_id, content_point, image_point, first_point,
+    action)
+    VALUES (#{userId}, #{reviewId}, #{placeId}, #{contentPoint}, #{imagePoint}, #{firstPoint},
+    #{action})
+  </insert>
+
+  <select id="findRecentByUserIdAndPlaceId"
+    resultType="com.world.pointsystem.event.entity.ReviewEvent">
+    SELECT id, user_id, review_id, place_id, content_point, image_point, first_point, action,
+    created_at
+    FROM review_event
+    WHERE place_id = #{placeId} AND user_id = #{userId}
+    ORDER BY created_at DESC
+    LIMIT 1
+  </select>
+
+  <select id="findByPlaceIdAndFirstPoint"
+    resultType="com.world.pointsystem.event.entity.ReviewEvent">
+    SELECT id, user_id, review_id, place_id, content_point, image_point, first_point, action,
+    created_at
+    FROM review_event
+    WHERE place_id = #{placeId} AND first_point != 0
+    ORDER BY created_at DESC
+    LIMIT 1
+  </select>
+
+  <select id="countPointByUserId" parameterType="String"
+    resultType="Integer">
+    SELECT SUM(content_point + image_point + first_point)
+    FROM review_event
+    WHERE user_id = #{userId}
+  </select>
+</mapper>
