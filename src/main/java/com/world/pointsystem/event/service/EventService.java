@@ -4,6 +4,7 @@ import com.world.pointsystem.event.dao.ReviewEventMapper;
 import com.world.pointsystem.event.entity.ReviewEvent;
 import com.world.pointsystem.event.enums.Point;
 import com.world.pointsystem.event.enums.ReviewAction;
+import com.world.pointsystem.event.exception.EventNotFoundException;
 import com.world.pointsystem.event.exception.InvalidReviewActionException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -104,8 +105,12 @@ public class EventService {
   }
 
 
-  public Integer getUserCurrentPoint(String userId) {
-    return reviewEventMapper.countPointByUserId(userId);
+  public Integer getUserCurrentPointOrElseThrow(String userId) {
+    Integer point = reviewEventMapper.countPointByUserId(userId);
+    if (point == null) {
+      throw new EventNotFoundException("There is no review event history for this user");
+    }
+    return point;
   }
 
 

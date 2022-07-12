@@ -53,7 +53,7 @@ public class EventController {
   @Operation(summary = "유저 아이디로 현재 point 조회", description = "유저 아이디로 해당 유저의 현재 point 조회하기")
   @ApiResponses({
       @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = PointResponse.class))),
-      @ApiResponse(responseCode = "404", description = "Review Event NOT FOUND", content = @Content(schema = @Schema(implementation = GlobalExceptionResponse.class))),
+      @ApiResponse(responseCode = "404", description = "REVIEW EVENT NOT FOUND", content = @Content(schema = @Schema(implementation = GlobalExceptionResponse.class))),
   })
   @Parameters({
       @Parameter(name = "userId", description = "유저 아이디", example = "1e2e0ef2-92b7-4817-a5f3-0c575361f745"),
@@ -61,7 +61,7 @@ public class EventController {
   @GetMapping("/points")
   public ResponseEntity<PointResponse> getUserEventPoints(
       @RequestParam(value = "userId") String userId) {
-    Integer point = eventService.getUserCurrentPoint(userId);
+    Integer point = eventService.getUserCurrentPointOrElseThrow(userId);
     PointResponse pointResponse = new PointResponse(userId, point);
     return ResponseEntity.ok().body(pointResponse);
   }
