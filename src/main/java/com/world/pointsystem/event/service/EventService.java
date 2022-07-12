@@ -61,7 +61,7 @@ public class EventService {
     reviewEvent.setFirstPoint(Point.ZERO.getValue());
 
     // reviewId로 contentPoint, imagePoint 누적 포인트 합 구하기
-    SumPointDto sumPointDto = getSumPointOfReviewEventOrNull(reviewEvent.getReviewId());
+    SumPointDto sumPointDto = getSumPointOfReviewEventOrElseThrow(reviewEvent.getReviewId());
 
     boolean isAddedRecentContentPoint = sumPointDto.getSumContentPoint()
         .equals(Point.PLUS.getValue());
@@ -102,8 +102,12 @@ public class EventService {
   }
 
 
-  public SumPointDto getSumPointOfReviewEventOrNull(String reviewId) {
-    return reviewEventMapper.findSumPointByReviewId(reviewId);
+  public SumPointDto getSumPointOfReviewEventOrElseThrow(String reviewId) {
+    SumPointDto sumPointDto = reviewEventMapper.findSumPointByReviewId(reviewId);
+    if (sumPointDto == null) {
+      throw new EventNotFoundException("There is no review event history for this review");
+    }
+    return sumPointDto;
   }
 
   public ReviewEvent getAddReviewEventOrNull(String placeId, String userId) {
