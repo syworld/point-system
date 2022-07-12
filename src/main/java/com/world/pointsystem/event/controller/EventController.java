@@ -1,6 +1,7 @@
 package com.world.pointsystem.event.controller;
 
 import com.world.pointsystem.event.dto.request.EventRequest;
+import com.world.pointsystem.event.dto.response.EventResponse;
 import com.world.pointsystem.event.dto.response.PointResponse;
 import com.world.pointsystem.event.entity.ReviewEvent;
 import com.world.pointsystem.event.mapper.ReviewEventMapstructMapper;
@@ -23,7 +24,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 
@@ -38,15 +38,18 @@ public class EventController {
 
   @Operation(summary = "리뷰 작성 이벤트 생성")
   @ApiResponses({
-      @ApiResponse(responseCode = "201", description = "REVIEW EVENT CREATED"),
+      @ApiResponse(responseCode = "201", description = "REVIEW EVENT CREATED", content = @Content(schema = @Schema(implementation = EventResponse.class))),
       @ApiResponse(responseCode = "400", description = "INVALID INPUT", content = @Content(schema = @Schema(implementation = GlobalExceptionResponse.class))),
   })
-  @ResponseStatus(HttpStatus.CREATED)
   @PostMapping()
-  public void create(@RequestBody @Validated EventRequest.Creation eventRequest) {
+  public ResponseEntity<EventResponse> create(
+      @RequestBody @Validated EventRequest.Creation eventRequest) {
     ReviewEvent reviewEvent = reviewEventMapstructMapper.toReviewEvent(eventRequest);
-    eventService.issue(reviewEvent, eventRequest.getAction(), eventRequest.getContent(),
+    reviewEvent = eventService.issue(reviewEvent, eventRequest.getAction(),
+        eventRequest.getContent(),
         eventRequest.getAttachedPhotoIds());
+    EventResponse eventResponse = reviewEventMapstructMapper.toResponse(reviewEvent);
+    return ResponseEntity.status(HttpStatus.CREATED).body(eventResponse);
   }
 
 

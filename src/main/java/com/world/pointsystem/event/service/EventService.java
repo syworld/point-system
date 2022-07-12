@@ -15,7 +15,7 @@ public class EventService {
 
   private final ReviewEventMapper reviewEventMapper;
 
-  public void issue(ReviewEvent reviewEvent, ReviewAction action, String content,
+  public ReviewEvent issue(ReviewEvent reviewEvent, ReviewAction action, String content,
       String[] attachedPhotos) {
 
     ReviewEvent preparedReviewEvent;
@@ -31,6 +31,7 @@ public class EventService {
     }
 
     reviewEventMapper.insert(preparedReviewEvent);
+    return preparedReviewEvent;
   }
 
   public ReviewEvent issueAddEvent(ReviewEvent reviewEvent, String content,
