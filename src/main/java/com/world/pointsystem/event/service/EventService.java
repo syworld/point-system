@@ -97,7 +97,7 @@ public class EventService {
 
   public boolean isFirstPlaceReviewExists(String placeId) {
     ReviewEvent reviewEvent = reviewEventMapper.findByPlaceIdAndFirstPoint(placeId);
-    // 가장 최근의 first_point = 1 이면 존재하므로 true 반환
+    // 가장 최근의 firstPoint = 1 이면 존재하므로 true 반환
     return reviewEvent != null && reviewEvent.getFirstPoint() == 1;
   }
 
