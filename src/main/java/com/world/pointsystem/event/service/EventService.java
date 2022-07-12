@@ -1,6 +1,7 @@
 package com.world.pointsystem.event.service;
 
 import com.world.pointsystem.event.dao.ReviewEventMapper;
+import com.world.pointsystem.event.dto.SumPointDto;
 import com.world.pointsystem.event.entity.ReviewEvent;
 import com.world.pointsystem.event.enums.Point;
 import com.world.pointsystem.event.enums.ReviewAction;
@@ -25,7 +26,7 @@ public class EventService {
     } else if (action.equals(ReviewAction.MOD)) {
       preparedReviewEvent = issueModEvent(reviewEvent, content, attachedPhotos);
     } else if (action.equals(ReviewAction.DELETE)) {
-      preparedReviewEvent = issueDeleteEvent(reviewEvent, content, attachedPhotos);
+      preparedReviewEvent = issueDeleteEvent(reviewEvent);
     } else {
       throw new InvalidReviewActionException("No review action matches");
     }
@@ -59,13 +60,12 @@ public class EventService {
     reviewEvent.setAction(ReviewAction.MOD);
     reviewEvent.setFirstPoint(Point.ZERO.getValue());
 
-    // 가장 최근 review event 호출
-    ReviewEvent recentReviewEvent = getUserRecentReviewEventOrNull(reviewEvent.getPlaceId(),
-        reviewEvent.getUserId());
+    // reviewId로 contentPoint, imagePoint 누적 포인트 합 구하기
+    SumPointDto sumPointDto = getSumPointOfReviewEventOrNull(reviewEvent.getReviewId());
 
-    boolean isAddedRecentContentPoint = recentReviewEvent.getContentPoint()
+    boolean isAddedRecentContentPoint = sumPointDto.getSumContentPoint()
         .equals(Point.PLUS.getValue());
-    boolean isAddedRecentImagePoint = recentReviewEvent.getImagePoint()
+    boolean isAddedRecentImagePoint = sumPointDto.getSumImagePoint()
         .equals(Point.PLUS.getValue());
 
     reviewEvent.setContentPoint(getPointByContent(content, isAddedRecentContentPoint));
@@ -74,14 +74,13 @@ public class EventService {
     return reviewEvent;
   }
 
-  public ReviewEvent issueDeleteEvent(ReviewEvent reviewEvent, String content,
-      String[] attachedPhotos) {
+  public ReviewEvent issueDeleteEvent(ReviewEvent reviewEvent) {
     // Set default value
     reviewEvent.setAction(ReviewAction.DELETE);
     reviewEvent.setContentPoint(Point.ZERO.getValue());
     reviewEvent.setImagePoint(Point.ZERO.getValue());
 
-    // Place의 첫 번째 리뷰이면 first point = -1
+    // Place의 첫 번째 리뷰이면 firstPoint = -1
     ReviewEvent addReviewEvent = getAddReviewEventOrNull(reviewEvent.getPlaceId(),
         reviewEvent.getUserId());
     Integer firstPointValue;
@@ -103,8 +102,8 @@ public class EventService {
   }
 
 
-  public ReviewEvent getUserRecentReviewEventOrNull(String placeId, String userId) {
-    return reviewEventMapper.findRecentByUserIdAndPlaceId(placeId, userId);
+  public SumPointDto getSumPointOfReviewEventOrNull(String reviewId) {
+    return reviewEventMapper.findSumPointByReviewId(reviewId);
   }
 
   public ReviewEvent getAddReviewEventOrNull(String placeId, String userId) {
