@@ -1,7 +1,6 @@
 package com.world.pointsystem.event.dto.response;
 
 import com.world.pointsystem.event.enums.ReviewAction;
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,6 +17,5 @@ public class EventResponse {
   private Integer imagePoint;
   private Integer firstPoint;
   private ReviewAction action;
-  private LocalDateTime createdAt;
 
 }
