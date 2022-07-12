@@ -20,6 +20,16 @@
     LIMIT 1
   </select>
 
+  <select id="findAddEventByUserIdAndPlaceId"
+    resultType="com.world.pointsystem.event.entity.ReviewEvent">
+    SELECT id, user_id, review_id, place_id, content_point, image_point, first_point, action,
+    created_at
+    FROM review_event
+    WHERE place_id = #{placeId} AND user_id = #{userId} AND action = 'ADD'
+    ORDER BY created_at DESC
+    LIMIT 1
+  </select>
+
   <select id="findByPlaceIdAndFirstPoint"
     resultType="com.world.pointsystem.event.entity.ReviewEvent">
     SELECT id, user_id, review_id, place_id, content_point, image_point, first_point, action,

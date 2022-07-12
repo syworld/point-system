@@ -10,6 +10,8 @@ public interface ReviewEventMapper {
 
   ReviewEvent findRecentByUserIdAndPlaceId(String placeId, String userId);
 
+  ReviewEvent findAddEventByUserIdAndPlaceId(String placeId, String userId);
+
   ReviewEvent findByPlaceIdAndFirstPoint(String placeId);
 
   Integer countPointByUserId(String userId);
