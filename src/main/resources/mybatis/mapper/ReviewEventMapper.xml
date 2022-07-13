@@ -23,7 +23,7 @@
     created_at
     FROM review_event
     WHERE place_id = #{placeId} AND user_id = #{userId} AND action = 'ADD'
-    ORDER BY created_at DESC
+    ORDER BY id DESC
     LIMIT 1
   </select>
 
@@ -33,7 +33,7 @@
     created_at
     FROM review_event
     WHERE place_id = #{placeId} AND first_point != 0
-    ORDER BY created_at DESC
+    ORDER BY id DESC
     LIMIT 1
   </select>
 

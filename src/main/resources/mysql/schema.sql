@@ -12,16 +12,12 @@ create table review_event
     created_at    timestamp default CURRENT_TIMESTAMP not null
 );
 
-create index IDX_created
-    on review_event (created_at);
-
-create index IDX_place_user
-    on review_event (place_id, user_id);
+create index IDX_place
+    on review_event (place_id);
 
 create index IDX_review
     on review_event (review_id);
 
 create index IDX_user
     on review_event (user_id);
-
 
