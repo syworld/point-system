@@ -18,6 +18,10 @@ create index IDX_created
 create index IDX_place_user
     on review_event (place_id, user_id);
 
+create index IDX_review
+    on review_event (review_id);
+
 create index IDX_user
     on review_event (user_id);
+
 
