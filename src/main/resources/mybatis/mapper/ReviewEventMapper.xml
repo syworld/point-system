@@ -42,5 +42,6 @@
     SELECT SUM(content_point + image_point + first_point)
     FROM review_event
     WHERE user_id = #{userId}
+    AND review_id NOT IN (SELECT review_id FROM review_event WHERE action = 'DELETED')
   </select>
 </mapper>
